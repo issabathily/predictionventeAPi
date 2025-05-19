@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BudgetBot - {% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="h-full flex flex-col transition-colors duration-300 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" id="theme-body">
+    <div class="flex h-full">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-800 dark:bg-gray-800 text-gray-100 p-4 flex flex-col justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold tracking-tight mb-6">BudgetBot</h1>
+                <nav>
+                    <ul>
+                        <li class="mb-4">
+                            <a href="#" id="chatbot-link" class="flex items-center p-2 rounded hover:bg-indigo-600 dark:hover:bg-indigo-500 text-sm/6 font-semibold">
+                                <i class="fas fa-robot mr-2"></i> Chatbot
+                            </a>
+                        </li>
+                        <li class="mb-4">
+                            <a href="#" id="history-link" class="flex items-center p-2 rounded hover:bg-indigo-600 dark:hover:bg-indigo-500 text-sm/6 font-semibold">
+                                <i class="fas fa-history mr-2"></i> Historique
+                            </a>
+                        </li>
+                        <li class="mb-4">
+                            <a href="#" id="graph-link" class="flex items-center p-2 rounded hover:bg-indigo-600 dark:hover:bg-indigo-500 text-sm/6 font-semibold">
+                                <i class="fas fa-chart-pie mr-2"></i> Graphiques
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div>
+                <button id="theme-toggle" class="w-full p-2 bg-indigo-600 dark:bg-indigo-500 rounded hover:bg-indigo-500 dark:hover:bg-indigo-400 flex items-center justify-center text-sm/6 font-semibold">
+                    <i class="fas fa-sun mr-2"></i> Changer Thème
+                </button>
+            </div>
+        </aside>
+
+        <!-- Contenu principal -->
+        <main class="flex-1 p-6 overflow-auto">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

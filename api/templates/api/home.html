@@ -1,0 +1,236 @@
+{% extends "api/base.html" %}
+{% load static %}
+
+{% block title %}BudgetBot - Analyse Mondiale{% endblock %}
+
+{% block content %}
+<body id="theme-body" class="h-screen w-full bg-gradient-to-br from-green-100 via-gray-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 flex flex-col overflow-hidden text-gray-900 dark:text-gray-100 font-sans transition-all duration-300">
+    <!-- En-tête avec menu principal -->
+    <header class="p-4 flex flex-col sm:flex-row justify-between items-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-lg rounded-b-2xl">
+        <div class="flex items-center justify-between w-full sm:w-auto">
+            <div class="flex items-center space-x-2">
+
+                <h1 class="text-xl sm:text-2xl font-bold tracking-wide text-indigo-600 dark:text-indigo-400">BudgetBot</h1>
+            </div>
+            <button id="mobile-menu-btn" class="sm:hidden p-2 text-indigo-600 dark:text-indigo-400">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <!-- Menu principal -->
+        <nav class="hidden sm:flex sm:items-center sm:space-x-4 mt-4 sm:mt-0">
+
+            <a href="#" id="tutorial-link" class="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg transition-all duration-200"><i class="fas fa-book mr-2"></i> Tutoriel</a>
+
+            <button id="theme-toggle" class="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-500 transition-all duration-200 shadow-md">
+                <i class="fas fa-sun"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Navigation mobile -->
+    <div id="mobile-menu" class="sm:hidden hidden fixed inset-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md z-50">
+        <div class="flex justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">Menu</h2>
+            <button id="close-menu-btn" class="text-indigo-600 dark:text-indigo-400">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="p-4 space-y-4">
+            <li><a href="#" id="chatbot-link-mobile" class="flex items-center p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg transition-all duration-200"><i class="fas fa-comments mr-2"></i> Chatbot</a></li>
+            <li><a href="#" id="tutorial-link-mobile" class="flex items-center p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg transition-all duration-200"><i class="fas fa-book mr-2"></i> Tutoriel</a></li>
+            <li><a href="#" id="graph-link-mobile" class="flex items-center p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg transition-all duration-200"><i class="fas fa-chart-pie mr-2"></i> Graphiques</a></li>
+            <li><a href="#" id="history-link-mobile" class="flex items-center p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg transition-all duration-200"><i class="fas fa-history mr-2"></i> Historique</a></li>
+            <li>
+                <button id="theme-toggle-mobile" class="w-full p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-all duration-200 shadow-md">
+                    <i class="fas fa-sun mr-2"></i> Thème Sombre
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Contenu principal -->
+        <main class="flex-1 p-4 sm:p-6 overflow-y-auto custom-scrollbar">
+            <!-- Zone de chat -->
+            <div id="chat-area" class="mb-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-xl shadow-xl max-h-64 sm:max-h-80 overflow-y-auto custom-scrollbar">
+                <div id="chat-messages" class="p-4 space-y-3"></div>
+            </div>
+
+            <!-- Chatbot Section -->
+            <div id="chatbot-section" class="space-y-4">
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <select id="commune-select" class="p-2 sm:p-3 border-none rounded-lg bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-600 transition-all duration-200 shadow-md w-full">
+                        {% for commune in communes %}
+                            <option value="{{ commune }}">{{ commune }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" id="annee-input" placeholder="Année (2024-2050)" min="2024" max="2050" class="p-2 sm:p-3 border-none rounded-lg bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-600 transition-all duration-200 shadow-md w-full">
+                    <button id="predict-btn" class="p-2 sm:p-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 shadow-lg w-full">
+                        <i class="fas fa-search mr-2"></i> Prédire
+                    </button>
+                </div>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <input type="text" id="chat-input" placeholder="Tapez votre message..." class="flex-1 p-2 sm:p-3 border-none rounded-lg bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-600 transition-all duration-200 shadow-md">
+                    <button id="send-chat-btn" class="p-2 sm:p-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 shadow-lg w-full sm:w-auto">
+                        <i class="fas fa-paper-plane mr-2"></i> Envoyer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tutoriel Section -->
+            <div id="tutorial-section" class="hidden space-y-4">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-indigo-600 dark:text-indigo-400">Guide Utilisateur</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
+                        <h3 class="text-lg sm:text-xl font-semibold mb-2">Étape 1 : Commencer</h3>
+                        <p class="text-sm sm:text-base">Sélectionnez une commune et une année, puis cliquez sur "Prédire".</p>
+                    </div>
+                    <div class="p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
+                        <h3 class="text-lg sm:text-xl font-semibold mb-2">Étape 2 : Interagir</h3>
+                        <p class="text-sm sm:text-base">Utilisez le chat pour poser des questions (ex. : "prédire Paris pour 2026").</p>
+                    </div>
+                    <div class="p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
+                        <h3 class="text-lg sm:text-xl font-semibold mb-2">Étape 3 : Explorer</h3>
+                        <p class="text-sm sm:text-base">Consultez les graphiques et l'historique pour analyser les données.</p>
+                    </div>
+                    <div class="p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
+                        <h3 class="text-lg sm:text-xl font-semibold mb-2">Étape 4 : Personnaliser</h3>
+                        <p class="text-sm sm:text-base">Activez le mode sombre ou changez la langue dans les paramètres.</p>
+                    </div>
+                </div>
+                <button id="start-tutorial" class="p-2 sm:p-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 shadow-lg w-full sm:w-auto">
+                    <i class="fas fa-play mr-2"></i> Démarrer le Tutoriel
+                </button>
+            </div>
+
+            <!-- Graphiques Section -->
+            <div id="graph-section" class="hidden space-y-4">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-indigo-600 dark:text-indigo-400">Analyse Budgétaire</h2>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <input type="number" id="compare-year" placeholder="Ajouter une année à comparer" min="2024" max="2050" class="p-2 sm:p-3 border-none rounded-lg bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-600 transition-all duration-200 shadow-md w-full sm:w-auto">
+                    <button id="compare-btn" class="p-2 sm:p-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 shadow-lg w-full sm:w-auto">
+                        <i class="fas fa-plus mr-2"></i> Comparer
+                    </button>
+                    <button id="download-pdf-btn" class="p-2 sm:p-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 shadow-lg w-full sm:w-auto">
+                        <i class="fas fa-file-pdf mr-2"></i> Exporter PDF
+                    </button>
+                    <button id="toggle-chart-btn" class="p-2 sm:p-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 shadow-lg w-full sm:w-auto">
+                        <i class="fas fa-chart-line mr-2"></i> Changer Graphique
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-lg shadow-lg">
+                        <h3 class="text-lg sm:text-xl font-semibold mb-2 text-indigo-600 dark:text-indigo-400">Répartition Budgétaire</h3>
+                        <canvas id="budget-chart-doughnut"></canvas>
+                        <div id="doughnut-results" class="mt-2 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300"></div>
+                    </div>
+                    <div class="p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-lg shadow-lg hidden" id="bar-chart-section">
+                        <h3 class="text-lg sm:text-xl font-semibold mb-2 text-indigo-600 dark:text-indigo-400">Comparaison par Année</h3>
+                        <canvas id="budget-chart-bar"></canvas>
+                        <div id="bar-results" class="mt-2 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300"></div>
+                    </div>
+                    <div class="p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-lg shadow-lg hidden" id="line-chart-section">
+                        <h3 class="text-lg sm:text-xl font-semibold mb-2 text-indigo-600 dark:text-indigo-400">Évolution Budgétaire</h3>
+                        <canvas id="budget-chart-line"></canvas>
+                        <div id="line-results" class="mt-2 text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300"></div>
+                    </div>
+                </div>
+                <!-- Tableau des prédictions -->
+                <div class="p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-lg shadow-lg">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2 text-indigo-600 dark:text-indigo-400">Détails des Prédictions</h3>
+                    <div class="overflow-x-auto">
+                        <table id="prediction-table" class="min-w-full border-collapse">
+                            <thead>
+                                <tr class="bg-indigo-600 dark:bg-indigo-900 text-white">
+                                    <th class="p-2 sm:p-3 text-left text-sm sm:text-base font-semibold">Commune</th>
+                                    <th class="p-2 sm:p-3 text-left text-sm sm:text-base font-semibold">Année</th>
+                                    <th class="p-2 sm:p-3 text-left text-sm sm:text-base font-semibold">Recettes (M€)</th>
+                                    <th class="p-2 sm:p-3 text-left text-sm sm:text-base font-semibold">Dépenses (M€)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="prediction-table-body" class="text-gray-700 dark:text-gray-300">
+                                <!-- Les lignes seront ajoutées dynamiquement via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="budget-advice" class="p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-lg shadow-lg">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2 text-indigo-600 dark:text-indigo-400">Conseils Budgétaires</h3>
+                    <ul id="advice-list" class="list-disc list-inside text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300"></ul>
+                </div>
+            </div>
+
+            <!-- Historique Section -->
+            <div id="history-section" class="hidden space-y-4">
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-indigo-600 dark:text-indigo-400">Historique</h2>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <select id="filter-commune" class="p-2 sm:p-3 border-none rounded-lg bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-600 transition-all duration-200 shadow-md w-full sm:w-auto">
+                        <option value="">Toutes les communes</option>
+                        {% for commune in communes %}
+                            <option value="{{ commune }}">{{ commune }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" id="filter-annee" placeholder="Filtrer par année" min="2024" max="2050" class="p-2 sm:p-3 border-none rounded-lg bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-600 transition-all duration-200 shadow-md w-full sm:w-auto">
+                </div>
+                <div id="history-list" class="space-y-2"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notification" class="fixed bottom-4 right-4 p-3 bg-green-500 text-white rounded-lg shadow-lg hidden animate-bounce">
+        Nouvelle prédiction disponible !
+    </div>
+
+    <!-- Paramètres flottants -->
+    <div class="fixed bottom-4 left-4">
+        <button id="settings-btn" class="p-2 sm:p-3 text-white  hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 ">
+            <i class="fas fa-cog"></i>
+        </button>
+        <div id="settings-panel" class="hidden absolute bottom-12 sm:bottom-14 left-0 w-56 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-lg shadow-lg p-3 sm:p-4">
+            <select id="language-select" class="w-full p-2 border-none rounded-lg bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-600 transition-all duration-200 text-sm sm:text-base">
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+            </select>
+            <button id="reset-history" class="w-full p-2 mt-2 bg-red-600 text-white rounded-lg hover:bg-red-500 transition-all duration-200 text-sm sm:text-base">Réinitialiser l'historique</button>
+        </div>
+    </div>
+</body>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #4f46e5;
+        border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #4338ca;
+    }
+    .animate-pulse-slow {
+        animation: pulse 3s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    #prediction-table tbody tr:nth-child(even) {
+        background-color: rgba(229, 231, 235, 0.5); /* Couleur de fond pour les lignes paires en mode clair */
+    }
+    #prediction-table tbody tr:nth-child(even):hover {
+        background-color: rgba(209, 213, 219, 0.5); /* Couleur de survol pour les lignes paires en mode clair */
+    }
+    .dark #prediction-table tbody tr:nth-child(even) {
+        background-color: rgba(55, 65, 81, 0.5); /* Couleur de fond pour les lignes paires en mode sombre */
+    }
+    .dark #prediction-table tbody tr:nth-child(even):hover {
+        background-color: rgba(75, 85, 99, 0.5); /* Couleur de survol pour les lignes paires en mode sombre */
+    }
+</style>
+{% endblock %}
